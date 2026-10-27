@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en" data-solo="presentacion">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Kliskatek</title>
+<link rel="stylesheet" href="kiosko.css">
+<link rel="icon" href="img/logo/kliskatek-mini.png">
+<style>:root { color-scheme: dark; }</style>
+</head>
+<body data-modo="espera">
+
+<header class="barra">
+  <img id="logo" class="logo" src="img/logo/kliskatek-white.svg" alt="Kliskatek" draggable="false">
+  <div class="barra-der">
+    <button id="volver" class="boton volver" data-t="volver">Back to presentation</button>
+    <div class="idiomas" role="group" aria-label="Language">
+      <button data-idioma="en"><img src="img/banderas/gb.svg" alt=""><span>EN</span></button>
+      <button data-idioma="es"><img src="img/banderas/es.svg" alt=""><span>ES</span></button>
+      <button data-idioma="eu"><img src="img/banderas/eu.svg" alt=""><span>EU</span></button>
+      <button data-idioma="zh"><img src="img/banderas/cn.svg" alt=""><span>中文</span></button>
+    </div>
+  </div>
+</header>
+
+<!-- Modo espera: la presentación -->
+<section id="espera" class="modo">
+  <div id="diapos" class="diapos"></div>
+  <button id="anterior" class="flecha-nav izq" aria-label="Previous">‹</button>
+  <button id="siguiente" class="flecha-nav der" aria-label="Next">›</button>
+  <div class="pie-espera">
+    <div class="tocar"><span class="dedo"></span><span data-t="tocar">Touch the screen to try the live demos</span></div>
+    <div id="puntos" class="puntos"></div>
+  </div>
+</section>
+
+<!-- Modo demos: disco y torre, cada uno en su mitad -->
+<section id="demos" class="modo">
+  <div class="panel" id="panel-disco">
+    <div class="panel-cab">
+      <img class="panel-icono" src="img/iconos/rotor.svg" alt="">
+      <div><h2 data-t="disco.titulo"></h2><p data-t="disco.sub"></p></div>
+      <button class="interruptor" data-demo="rotor" aria-pressed="true"><i></i><span>ON</span></button>
+    </div>
+    <div class="rotor">
+      <div id="hueco-disco" class="hueco-disco"></div>
+      <div class="rpm"><span id="rpm">0</span><small data-t="disco.rpm">rpm</small></div>
+      <div class="objetivo"><span data-t="disco.objetivo">target</span> <span id="rpm-objetivo">0</span></div>
+      <div id="modos" class="modos" role="group">
+        <button data-modo="parado" data-t="disco.modos.parado">Stop</button>
+        <button data-modo="auto" data-t="disco.modos.auto">Auto</button>
+        <button data-modo="manual" data-t="disco.modos.manual">Manual</button>
+      </div>
+      <div class="deslizador">
+        <input id="velocidad" type="range" min="0" max="100" step="1" value="30" disabled>
+        <div class="escala"><span>0</span><span id="max-rpm">100</span></div>
+      </div>
+      <div id="rotor-aviso" class="aviso"></div>
+    </div>
+    <div id="contadores" class="contadores">
+      <div class="contador sble"><i class="led"></i>
+        <div class="nombre"><b>SenseBLE</b><small data-t="disco.sble">over Bluetooth LE</small></div>
+        <div class="medida"><span class="valores"></span><span class="tasa"></span></div>
+        <div class="lect"><b>0</b><small data-t="disco.lecturas">reads</small></div></div>
+      <div class="contador sread"><i class="led"></i>
+        <div class="nombre"><b>SenseRead</b><small data-t="disco.sread">in USER memory</small></div>
+        <div class="medida"><span class="valores"></span><span class="tasa"></span></div>
+        <div class="lect"><b>0</b><small data-t="disco.lecturas">reads</small></div></div>
+      <div id="rotor-lecturas-aviso" class="aviso"></div>
+    </div>
+  </div>
+  <div class="panel" id="panel-torre">
+    <div class="panel-cab">
+      <img class="panel-icono" src="img/iconos/strain.svg" alt="">
+      <div><h2 data-t="torre.titulo"></h2><p data-t="torre.sub"></p></div>
+      <button class="interruptor" data-demo="torre" aria-pressed="true"><i></i><span>ON</span></button>
+    </div>
+    <div id="hueco-torre" class="hueco-torre"></div>
+    <div class="torre-estado"><span id="torre-fase" class="fase"></span><span id="torre-tasa"></span></div>
+  </div>
+</section>
+
+<!-- ¿Activar las demos? -->
+<div id="confirmar" class="capa oculto">
+  <div class="dialogo">
+    <h2 data-t="pregunta">Start the live demos?</h2>
+    <p data-t="detalle"></p>
+    <div class="botones">
+      <button id="confirmar-no" class="boton" data-t="no">Keep watching</button>
+      <button id="confirmar-si" class="boton principal" data-t="si">Start demos</button>
+    </div>
+  </div>
+</div>
+
+<!-- Menú del equipo (logo pulsado 3 s) -->
+<div id="personal" class="capa oculto">
+  <div class="dialogo">
+    <h2 data-t="personal.titulo">Staff</h2>
+    <p id="personal-estado" class="diag"></p>
+    <div class="botones">
+      <button id="personal-cerrar" class="boton" data-t="personal.cerrar">Close</button>
+      <button id="personal-cero" class="boton" data-t="personal.cero">Tower to zero</button>
+      <button id="personal-recargar" class="boton" data-t="personal.recargar">Reload</button>
+      <button id="personal-salir" class="boton peligro" data-t="personal.salir">Exit kiosk</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="kiosko.js"></script>
+</body>
+</html>

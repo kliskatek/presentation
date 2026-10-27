@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Modelo 3D · Kliskatek</title>
+<style>
+  @font-face { font-family: "Oxanium"; src: url("./torre/fonts/Oxanium-VariableFont_wght.ttf") format("truetype"); font-weight: 200 800; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; }
+  canvas { display: block; width: 100%; height: 100%; }
+  /* ladrillo: qué es cada tag, mientras se ve por dentro (RAIN el verde, NFC el blanco de la tapa) */
+  #etiquetas { position: fixed; inset: 0; pointer-events: none; }
+  .etq { position: absolute; left: 0; top: 0; transform: translate(-50%, calc(-100% - 3vh)); padding: 1vh 1.4vh;
+    border-radius: 1.4vh; background: rgba(17, 17, 17, .92); border: .3vh solid currentColor; opacity: 0; white-space: nowrap; }
+  .etq img { height: 4.6vh; display: block; }
+  .etq::after { content: ''; position: absolute; left: 50%; top: 100%; width: .3vh; height: 3vh; margin-left: -.15vh; background: currentColor; }
+  .etq::before { content: ''; position: absolute; left: 50%; top: calc(100% + 3vh); width: 1.4vh; height: 1.4vh; margin: -.7vh 0 0 -.7vh;
+    border-radius: 50%; background: currentColor; }
+  .etq.rain { color: #4CAF50; }
+  .etq.nfc { color: #E8E2D8; }
+  /* ladrillo: lo leído, debajo del logo, y el destello al contestar */
+  .etq { transition: box-shadow .3s; }
+  .etq .v { display: block; overflow: hidden; max-height: 0; opacity: 0; text-align: center; color: #fff;
+    font: 700 2.8vh/1.1 "Oxanium", "Segoe UI", sans-serif; transition: max-height .45s, opacity .45s, margin .45s; }
+  .etq.con-valor .v { max-height: 4vh; opacity: 1; margin-top: .6vh; }
+  /* los rótulos de los aparatos: medidas en --k (1vh; en un iframe panorámico, que es bajo, más grandes) */
+  :root { --k: 1vh; }
+  html.panoramica { --k: 1.45vh; }
+  /* sin pilas */
+  .etq.disp { --c: #2E9BFF; opacity: 1; display: flex; align-items: center; gap: calc(1 * var(--k)); padding: calc(.9 * var(--k)) calc(1.5 * var(--k)); border: calc(.35 * var(--k)) solid var(--c);
+    border-radius: calc(1.4 * var(--k)); transform: translate(-50%, calc(-100% - calc(3.5 * var(--k)))); color: #fff; font: 700 calc(2.6 * var(--k))/1 "Oxanium", "Segoe UI", "Microsoft JhengHei", sans-serif; }
+  .etq.disp::after { height: calc(3.5 * var(--k)); width: calc(.35 * var(--k)); margin-left: calc(-.175 * var(--k)); background: var(--c); }
+  .etq.disp::before { top: calc(100% + calc(3.5 * var(--k))); width: calc(1.4 * var(--k)); height: calc(1.4 * var(--k)); margin: calc(-.7 * var(--k)) 0 0 calc(-.7 * var(--k)); background: var(--c); }
+  .etq.disp img { height: calc(2.4 * var(--k)); }
+  .etq.disp.dos div { display: flex; flex-direction: column; gap: calc(.5 * var(--k)); text-align: left; }   /* nombre y, debajo, qué hace */
+  .etq.disp.dos span { font: 600 calc(1.75 * var(--k))/1.15 "Segoe UI", Arial, "Microsoft JhengHei", sans-serif; color: #C9D2DA; }
+  .etq.disp.naranja { --c: #FF8000; }
+  .etq.disp.temp { gap: calc(.8 * var(--k)); }                     /* la temperatura de cada unión del embarrado */
+  .etq.disp.temp .tv { font: 700 calc(2.4 * var(--k))/1 "Oxanium", "Segoe UI", sans-serif; color: #C9D2DA; }
+  .etq.disp.alarma { --c: #E5484D; box-shadow: 0 0 calc(2.4 * var(--k)) rgba(229, 72, 77, .7); }
+  .etq.disp.alarma .tv { color: #FF8A80; }
+  .etq.disp.abajo { transform: translate(-50%, calc(3.5 * var(--k))); }          /* colgando del punto: el palito, arriba */
+  .etq.disp.abajo::after { top: auto; bottom: 100%; }
+  .etq.disp.abajo::before { top: calc(calc(-3.5 * var(--k))); }
+  .etq.disp.izq { transform: translate(-86%, calc(3.5 * var(--k))); }             /* en el borde derecho: crece hacia la izquierda */
+  .etq.disp.izq::after, .etq.disp.izq::before { left: 86%; }
+  .etq.disp.derecha { transform: translate(calc(10 * var(--k)), -50%); }   /* a la derecha del punto, con el palito en horizontal */
+  .etq.disp.derecha::after { left: calc(-10 * var(--k)); top: 50%; width: calc(10 * var(--k)); height: calc(.35 * var(--k));
+    margin: calc(-.175 * var(--k)) 0 0 0; }
+  .etq.disp.derecha::before { left: calc(-10 * var(--k)); top: 50%; }
+  .etq.disp.arriba-izq { transform: translate(-86%, calc(-100% - calc(3.5 * var(--k)))); }   /* encima, creciendo a la izquierda */
+  .etq.disp.arriba-izq::after, .etq.disp.arriba-izq::before { left: 86%; }
+  .burbuja { position: absolute; left: 0; top: 0; transform: translate(-50%, -100%); display: flex; align-items: center; gap: .9vh;
+    padding: .8vh 1.6vh; border-radius: 1.4vh; background: rgba(17, 17, 17, .92); border: .35vh solid #FF8000; opacity: 0; white-space: nowrap;
+    color: #fff; font: 700 3.4vh/1 "Oxanium", "Segoe UI", sans-serif; box-shadow: 0 0 2.4vh rgba(255, 128, 0, .35); }
+  .burbuja img { height: 3.2vh; }
+  .burbuja.ok { border-color: #2EBD6B; box-shadow: 0 0 2.4vh rgba(46, 189, 107, .4); }
+  .burbuja i { font-style: normal; color: #2EBD6B; }
+  .bajo-tag { position: absolute; left: 0; top: 0; transform: translate(-50%, 2vh); display: flex; flex-direction: column; align-items: center;
+    gap: 1.5vh; white-space: nowrap; color: #C9D2DA; font: 600 2.2vh/1.1 "Segoe UI", Arial, "Microsoft JhengHei", sans-serif; }
+  .bajo-tag .nombre { font: 700 2.8vh/1 "Oxanium", "Segoe UI", "Microsoft JhengHei", sans-serif; color: #fff; }
+  .carga { display: flex; align-items: center; gap: 1.1vh; }
+  .carga span { color: #2E9BFF; font-weight: 700; }
+  .barra-c { width: 20vh; height: 1.3vh; border-radius: 1vh; background: #2A2F34; overflow: hidden; }
+  .barra-c i { display: block; height: 100%; width: 0; border-radius: 1vh; background: linear-gradient(90deg, #0080FF, #2EBD6B); }
+  .sin { display: flex; gap: 1.3vh; }
+  .sin span { display: flex; align-items: center; gap: .8vh; padding: .6vh 1.4vh; border: .25vh solid #3A4046; border-radius: 99px;
+    background: rgba(25, 28, 31, .9); }
+  .sin svg { width: 2.6vh; height: 2.6vh; fill: none; stroke: #C9D2DA; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .sin svg .raya { stroke: #E5484D; stroke-width: 2.4; }
+  /* disco: los dos tags del palo; destellan al contestar al Stix y se marcan en rojo si no contestan */
+  .etq.tag { font: 600 2.2vh/1.15 "Segoe UI", Arial, "Microsoft JhengHei", sans-serif; color: #fff; text-align: center;
+    border-color: var(--c); transition: box-shadow .25s, border-color .25s; }
+  .etq.tag::before, .etq.tag::after { background: var(--c); }
+  .etq.tag img { height: 2.6vh; margin: .2vh auto .6vh; }        /* el logo de RAIN encima del nombre */
+  .etq.tag b { font-family: "Oxanium", "Segoe UI", sans-serif; font-size: 2.6vh; color: var(--c); }
+  .etq.sread { --c: #FF8000; }
+  .etq.sble { --c: #2E9BFF; }
+  .etq.leido { box-shadow: 0 0 2.2vh #2EBD6B, 0 0 .6vh #2EBD6B inset; }
+  .etq.fallo { --c: #E5484D; box-shadow: 0 0 2.2vh rgba(229, 72, 77, .8); }
+  /* disco en la presentación (?show=1): la app de lecturas en directo */
+  #app { position: fixed; right: 3%; bottom: 5%; width: 40%; min-width: 260px; padding: 1.6vh 1.8vh; border-radius: 1.8vh;
+    background: rgba(25, 28, 31, .94); border: 1px solid #2A2F34; box-shadow: 0 1.5vh 4vh rgba(0, 0, 0, .55);
+    font: 2vh "Segoe UI", Arial, "Microsoft JhengHei", sans-serif; color: #F2F4F6; display: none; }
+  #app.visible { display: block; }
+  #app.arriba { top: 4%; bottom: auto; left: 3%; right: auto; }   /* en el GIS: arriba a la izquierda (abajo, el manómetro; a la derecha, la fuga) */
+  #app .tit { display: flex; align-items: center; gap: 1vh; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    font-size: 1.8vh; color: #FF8000; margin-bottom: 1.4vh; }
+  #app .tit img { height: 1.8vh; }
+  #app .vel { display: flex; align-items: center; gap: 1.2vh; margin-bottom: 1.6vh; color: #8A949C; font-size: 1.9vh; }
+  #app .barra { flex: 1; height: 1.1vh; border-radius: 1vh; background: #2A2F34; overflow: hidden; }
+  #app .barra i { display: block; height: 100%; width: 0; border-radius: 1vh; background: linear-gradient(90deg, #2E9BFF, #FF8000); }
+  #app .fila { display: grid; grid-template-columns: 2.2vh 1fr auto; align-items: center; gap: 1.1vh; padding: 1vh 0;
+    border-top: 1px solid #2A2F34; }
+  #app .led { width: 1.6vh; height: 1.6vh; border-radius: 50%; background: #3A4046; transition: background .15s, box-shadow .15s; }
+  #app .led.on { background: #2EBD6B; box-shadow: 0 0 1.4vh #2EBD6B; }
+  #app .led.mal { background: #E5484D; box-shadow: 0 0 1.4vh #E5484D; }
+  #app .traza { display: block; width: 100%; height: 4.6vh; margin: .2vh 0 .8vh; }   /* la tendencia y el umbral de alarma */
+  #app .traza line { stroke: #E5484D; stroke-width: 1; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; }
+  #app .traza polyline { fill: none; stroke: #FF8000; stroke-width: 2.2; vector-effect: non-scaling-stroke; }
+  #app .nom b { font-family: "Oxanium", "Segoe UI", sans-serif; font-size: 2.3vh; }
+  #app .nom small { display: block; font-size: 1.9vh; color: #2EBD6B; }
+  #app .fila.no .nom small { color: #E5484D; }
+  #app .cuenta { font: 700 2.8vh "Oxanium", "Segoe UI", sans-serif; text-align: right; min-width: 6ch; }
+  #app .cuenta span { display: block; font: 1.6vh "Segoe UI", Arial, sans-serif; color: #8A949C; }
+  #app .sread .nom b { color: #FF8000; } #app .sble .nom b { color: #2E9BFF; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }
+</script>
+<style>:root { color-scheme: dark; }</style>
+</head>
+<body>
+<canvas id="vista"></canvas>
+<div id="etiquetas"></div>
+<div id="app"></div>
+<script type="module" src="modelo3d.js"></script>
+</body>
+</html>

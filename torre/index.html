@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Torre · Kliskatek</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="assets/icono.png">
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }
+</script>
+<style>:root { color-scheme: dark; }</style>
+</head>
+<body>
+<canvas id="vista"></canvas>
+
+<header class="cabecera">
+  <div class="kicker">Monitorización estructural</div>
+  <h1>Torre de Macau</h1>
+  <div class="sub">SenseBLE-ACC · sin batería · energía de la Zebra, dato por BLE</div>
+</header>
+
+<section class="lectura">
+  <svg class="dial" viewBox="0 0 240 132" aria-hidden="true">
+    <path class="pista" d="M 20 120 A 100 100 0 0 1 220 120"/>
+    <path id="zona-ok" class="zona ok"/>
+    <path id="zona-vig-izq" class="zona vigilar"/><path id="zona-vig-der" class="zona vigilar"/>
+    <path id="zona-al-izq" class="zona alarma"/><path id="zona-al-der" class="zona alarma"/>
+    <g id="aguja"><line x1="120" y1="120" x2="120" y2="30"/><circle cx="120" cy="120" r="7"/></g>
+    <text x="22" y="132" class="esc">−35°</text><text x="218" y="132" class="esc" text-anchor="end">+35°</text>
+  </svg>
+  <div class="cifra"><span id="angulo">0,0</span><span class="grado">°</span></div>
+  <div id="estado" class="estado ok">OK</div>
+</section>
+
+<footer class="pie">
+  <span id="fuente">Fuente: —</span>
+  <span id="tasa"></span>
+</footer>
+
+<aside id="mandos" class="mandos oculto">
+  <div class="fila">
+    <button data-fuente="sim">Simulación</button>
+    <button data-fuente="manual">Manual</button>
+  </div>
+  <input id="deslizador" type="range" min="-35" max="35" step="0.1" value="0">
+  <div class="fila">
+    <button id="vista-frente">Vista de frente</button>
+  </div>
+  <div id="diagnostico" class="diag">Simulación del navegador</div>
+  <div class="ayuda">H mandos · ← → manual · S simulación · V vista</div>
+</aside>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

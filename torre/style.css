@@ -1,0 +1,67 @@
+@font-face { font-family: "Oxanium"; src: url("fonts/Oxanium-VariableFont_wght.ttf") format("truetype"); font-weight: 200 800; }
+:root {
+  --azul: #0080FF;
+  --naranja: #FF8000;
+  --tinta: #F2F4F6;
+  --gris: #8A949C;
+  --ok: #2EBD6B;
+  --vigilar: #F2B01E;
+  --alarma: #E5484D;
+  --fondo: #0F1113;
+  --panel: rgba(22, 25, 28, .82);
+  --letra: "Oxanium", "Segoe UI", "Helvetica Neue", Arial, "Microsoft JhengHei", sans-serif;
+}
+/* Dentro del quiosco (?incrustada=1): solo la torre y la lectura; el resto lo pone el quiosco */
+body.incrustada .cabecera, body.incrustada .pie, body.incrustada .mandos { display: none !important; }
+body.incrustada, body.incrustada * { cursor: none !important; }      /* el quiosco es táctil: sin cursor */
+html:has(body.transparente), body.transparente { background: transparent; }
+body.sin-lectura .lectura { display: none; }
+/* En el móvil dibujado en una diapositiva (?movil=1): sin mínimos en px, la cifra y el estado escalan con el iframe
+   (a 1080p el móvil mide ~316 px de alto: 14vh ≈ 44 px, lo mismo que daba el mínimo) */
+body.movil .cifra { font-size: 14vh; }
+body.movil .estado { font-size: 3.8vh; }
+html:lang(zh) .estado { letter-spacing: .3em; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--fondo); color: var(--tinta);
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; user-select: none; }
+#vista { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+
+.cabecera { position: fixed; top: 3vh; left: 4vw; pointer-events: none; }
+.kicker { color: var(--naranja); font-weight: 700; font-size: clamp(11px, 1.4vh, 16px); letter-spacing: .16em; text-transform: uppercase; }
+.cabecera h1 { margin: .15em 0 .1em; font-family: var(--letra); font-size: clamp(26px, 4.4vh, 52px); color: var(--azul); font-weight: 700; }
+.sub { color: var(--gris); font-size: clamp(12px, 1.7vh, 19px); }
+
+.lectura { position: fixed; left: 0; right: 0; bottom: 5.5vh; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+.dial { width: min(40vw, 25vh); height: auto; overflow: visible; }
+.dial .pista { fill: none; stroke: #2A2F34; stroke-width: 14; stroke-linecap: round; }
+.dial .zona { fill: none; stroke-width: 14; }
+.dial .zona.ok { stroke: var(--ok); opacity: .55; }
+.dial .zona.vigilar { stroke: var(--vigilar); opacity: .55; }
+.dial .zona.alarma { stroke: var(--alarma); opacity: .55; }
+.dial #aguja line { stroke: var(--tinta); stroke-width: 4; stroke-linecap: round; }
+.dial #aguja circle { fill: var(--tinta); }
+.dial .esc { fill: var(--gris); font-size: 11px; }
+.cifra { font-family: var(--letra); font-weight: 700; font-size: clamp(44px, 7.6vh, 104px); line-height: 1; margin-top: -0.6vh;
+  font-variant-numeric: tabular-nums; text-shadow: 0 2px 18px rgba(0, 0, 0, .6); }
+.cifra .grado { color: var(--gris); margin-left: .05em; }
+.estado { margin-top: 1vh; padding: .25em 1em; border-radius: 999px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  font-size: clamp(12px, 1.8vh, 20px); transition: background .3s, color .3s; }
+.estado.ok { background: rgba(46, 189, 107, .18); color: var(--ok); }
+.estado.vigilar { background: rgba(242, 176, 30, .18); color: var(--vigilar); }
+.estado.alarma { background: rgba(229, 72, 77, .2); color: var(--alarma); }
+
+.pie { position: fixed; left: 4vw; right: 4vw; bottom: 2vh; display: flex; justify-content: space-between; color: var(--gris);
+  font-size: clamp(11px, 1.5vh, 16px); pointer-events: none; }
+.pie .vivo::before { content: "●"; color: var(--ok); margin-right: .4em; }
+
+.mandos { position: fixed; top: 3vh; right: 3vw; width: 290px; background: var(--panel); border: 1px solid #2A2F34; border-radius: 14px;
+  padding: 14px; display: flex; flex-direction: column; gap: 10px; backdrop-filter: blur(6px); }
+.mandos.oculto { display: none; }
+.mandos .fila { display: flex; gap: 6px; }
+.mandos button { flex: 1; background: #22272C; color: var(--tinta); border: 1px solid #343B42; border-radius: 8px; padding: 7px 4px;
+  font: inherit; font-size: 13px; cursor: pointer; }
+.mandos button.activo { background: var(--azul); border-color: var(--azul); }
+.mandos button:disabled { opacity: .4; cursor: default; }
+.mandos input[type=range] { width: 100%; accent-color: var(--azul); }
+.mandos .ayuda { color: var(--gris); font-size: 11px; line-height: 1.4; }
+.mandos .diag { color: #C9D2DA; font: 12px/1.4 Consolas, "Cascadia Mono", monospace; background: #15181B; border-radius: 6px; padding: 6px 8px; }

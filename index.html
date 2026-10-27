@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kliskatek · Battery-free wireless sensors</title>
+<meta name="description" content="Low-power electronics for wireless sensing: battery-free sensors with RAIN RFID, Bluetooth LE and NFC, from the chip to the system.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kliskatek">
+<meta property="og:title" content="Kliskatek · Battery-free wireless sensors">
+<meta property="og:description" content="Low-power electronics for wireless sensing: battery-free sensors with RAIN RFID, Bluetooth LE and NFC, from the chip to the system.">
+<meta property="og:url" content="https://kliskatek.github.io/presentation/">
+<meta property="og:image" content="https://kliskatek.github.io/presentation/portada.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/logo/kliskatek-mini.png">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #111111; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+         font: 600 15px "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #8A949C; }
+  iframe { display: block; border: 0; width: min(100vw, 100vh * 16 / 9); height: min(100vh, 100vw * 9 / 16); }
+  @supports (height: 100dvh) {
+    iframe { width: min(100vw, 100dvh * 16 / 9); height: min(100dvh, 100vw * 9 / 16); }
+  }
+  .girar { display: none; align-items: center; gap: 10px; }
+  .girar svg { width: 28px; height: 28px; animation: girar 2.4s ease-in-out infinite; }
+  @keyframes girar { 0%, 30% { transform: none; } 60%, 100% { transform: rotate(-90deg); } }
+  @media (orientation: portrait) { .girar { display: flex; } }
+</style>
+</head>
+<body>
+<iframe id="diapos" src="diapositivas.html" title="Kliskatek" allow="fullscreen"></iframe>
+<div class="girar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+  <rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>Turn your phone for full screen</div>
+<script>
+  // las flechas del teclado van a la presentación sin tener que pinchar antes en ella
+  const f = document.getElementById('diapos');
+  f.addEventListener('load', () => f.contentWindow.focus());
+</script>
+</body>
+</html>
